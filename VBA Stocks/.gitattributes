@@ -1,0 +1,72 @@
+Sub nextcell()
+
+Dim ws As Worksheet
+For Each ws In ThisWorkbook.Sheets
+Dim Stock_Symbol As String
+Dim Summary_Table_Row As Integer
+Dim Total_Volume As Double
+Dim Price_Change As Double
+Dim beginning As Double
+Dim Starting_Price As Double
+Dim Percent_Change As Double
+Dim ran As Range
+Dim d As Long
+Dim c As Double
+Set ran = ws.Range("A2", ws.Range("A2").End(xlDown))
+d = ran.Cells.Count + 1
+
+ws.Cells(1, 9).Value = "Stock Symbol"
+ws.Cells(1, 10).Value = "Year Change"
+ws.Cells(1, 11).Value = "Percent Change"
+ws.Cells(1, 12).Value = "Total Stock Volume"
+
+Summary_Table_Row = 2
+beginning = 2
+ws.Columns("K").NumberFormat = "0.00%"
+
+For i = 2 To d
+
+If ws.Cells(i + 1, 1).Value <> ws.Cells(i, 1).Value Then
+    Stock_Symbol = ws.Cells(i, 1).Value
+    Total_Volume = Total_Volume + ws.Cells(i, 7).Value
+    Price_Change = ws.Cells(i, 6).Value - ws.Cells(beginning, 3).Value
+        If ws.Cells(beginning, 3).Value > 0 Then
+            Percent_Change = Price_Change / ws.Cells(beginning, 3).Value
+        Else: ws.Range("K" & Summary_Table_Row).Value = "NA"
+        End If
+    ws.Range("J" & Summary_Table_Row).Value = Price_Change
+    ws.Range("K" & Summary_Table_Row).Value = Percent_Change
+    ws.Range("I" & Summary_Table_Row).Value = Stock_Symbol
+    ws.Range("L" & Summary_Table_Row).Value = Total_Volume
+
+    Summary_Table_Row = Summary_Table_Row + 1
+    Total_Volume = 0
+    Starting_Price = 0
+    Current_Price = 0
+    Price_Change = 0
+    
+    beginning = i + 1
+Else
+    Total_Volume = Total_Volume + ws.Cells(i, 7).Value
+
+End If
+
+Next i
+
+Dim rg As Range
+Dim r As Long
+Set rg = ws.Range("J2", ws.Range("J2").End(xlDown))
+r = rg.Cells.Count + 1
+
+For j = 2 To r
+If ws.Cells(j, 10).Value > 0 Then
+    ws.Cells(j, 10).Interior.ColorIndex = 4
+ElseIf ws.Cells(j, 10).Value < 0 Then
+    ws.Cells(j, 10).Interior.ColorIndex = 3
+Else
+    ws.Cells(j, 10).Interior.ColorIndex = 2
+    
+End If
+Next j
+Next ws
+End Sub
